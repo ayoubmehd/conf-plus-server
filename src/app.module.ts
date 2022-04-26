@@ -36,6 +36,7 @@ export class AppModule {
           saveUninitialized: false,
           cookie: {
             secure: this.configService.get('NODE_ENV') === 'production',
+            domain: this.configService.get('COOKIE_DOMAIN') || undefined,
           },
           store: MongoStore.create({
             mongoUrl: this.configService.get('MONGO_SESSION_URL'),
