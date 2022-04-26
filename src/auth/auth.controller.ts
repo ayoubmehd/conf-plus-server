@@ -32,7 +32,8 @@ export class AuthController {
       };
     }
 
-    session.user = user;
+    session.user = { email: user.email, id: user._id };
+
     return user;
   }
 }
