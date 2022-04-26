@@ -1,4 +1,12 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  Session,
+  UseInterceptors,
+} from '@nestjs/common';
+import MongooseClassSerializerInterceptor from 'src/interceptors/mongooseClassSerializer.interceptor';
+import { User } from '../users/users.schema';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 
@@ -6,8 +14,25 @@ import { LoginDto } from './dto/login.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @UseInterceptors(MongooseClassSerializerInterceptor(User))
   @Post('login')
-  login(@Body() loginDto: LoginDto) {
-    return this.authService.validateUser(loginDto.email, loginDto.password);
+  async login(
+    @Body() loginDto: LoginDto,
+    @Session() session: Record<string, any>,
+  ) {
+    const user = await this.authService.validateUser(
+      loginDto.email,
+      loginDto.password,
+    );
+
+    if (!user) {
+      return {
+        success: false,
+        message: 'Invalid credentials',
+      };
+    }
+
+    session.user = user;
+    return user;
   }
 }

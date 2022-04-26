@@ -2,11 +2,12 @@ import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongoConfigService } from './mongo-config-service/mongo-config-service.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { SessionMiddleware } from './session.middleware';
+import session from 'express-session';
+import MongoStore from 'connect-mongo';
 
 @Module({
   imports: [
@@ -24,7 +25,23 @@ import { SessionMiddleware } from './session.middleware';
   providers: [AppService, MongoConfigService],
 })
 export class AppModule {
+  constructor(private readonly configService: ConfigService) {}
+
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(SessionMiddleware).forRoutes('*');
+    consumer
+      .apply(
+        session({
+          secret: this.configService.get('SESSION_SECRET'),
+          resave: false,
+          saveUninitialized: false,
+          cookie: {
+            secure: this.configService.get('NODE_ENV') === 'production',
+          },
+          store: MongoStore.create({
+            mongoUrl: this.configService.get('MONGO_SESSION_URL'),
+          }),
+        }),
+      )
+      .forRoutes('*');
   }
 }
