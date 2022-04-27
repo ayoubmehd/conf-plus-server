@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongoConfigService } from './mongo-config-service/mongo-config-service.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { ConferenceModule } from './conference/conference.module';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
 
@@ -20,6 +21,7 @@ import MongoStore from 'connect-mongo';
     }),
     AuthModule,
     UsersModule,
+    ConferenceModule,
   ],
   controllers: [AppController],
   providers: [AppService, MongoConfigService],
