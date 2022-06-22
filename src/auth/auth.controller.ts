@@ -4,6 +4,8 @@ import {
   Body,
   Session,
   UseInterceptors,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import MongooseClassSerializerInterceptor from 'src/interceptors/mongooseClassSerializer.interceptor';
 import { User } from '../users/users.schema';
@@ -26,10 +28,13 @@ export class AuthController {
     );
 
     if (!user) {
-      return {
-        success: false,
-        message: 'Invalid credentials',
-      };
+      throw new HttpException(
+        {
+          status: HttpStatus.UNAUTHORIZED,
+          error: 'Invalid credentials',
+        },
+        HttpStatus.UNAUTHORIZED,
+      );
     }
 
     session.user = { email: user.email, id: user._id };
