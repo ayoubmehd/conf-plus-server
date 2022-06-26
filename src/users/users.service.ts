@@ -16,6 +16,7 @@ export class UsersService {
   async create(user: CreateUserDto): Promise<User> {
     return this.userModel.create({
       email: user.email,
+      role: user.role || 'user',
       password: await genSalt(10).then((salt) => hash(user.password, salt)),
     });
   }

@@ -41,4 +41,7 @@ export class AuthController {
 
     return user;
   }
+
+  @Post('logout')
+  async logout(@Session() session: Record<string, any>) {}
 }

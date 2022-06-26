@@ -1,19 +1,23 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Exclude } from 'class-transformer';
-import { Document } from 'mongoose';
+import { Exclude, Transform } from 'class-transformer';
+import { Document, Types } from 'mongoose';
+import {} from '@nestjs/mongoose';
 
 export type UserDocument = User & Document;
 
 @Schema()
 export class User {
-  @Exclude()
-  _id: string;
+  @Transform(({ value }) => value.toString(), { toPlainOnly: true })
+  _id: Types.ObjectId;
 
   @Exclude()
   __v: number;
 
   @Prop()
   email: string;
+
+  @Prop()
+  role: string;
 
   @Exclude()
   @Prop()
